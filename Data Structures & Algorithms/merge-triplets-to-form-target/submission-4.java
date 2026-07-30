@@ -1,20 +1,31 @@
 class Solution {
-    public boolean mergeTriplets(int[][] triplets, int[] target) {
-        int[] result = new int[3];
+    public boolean isNStraightHand(int[] hand, int groupSize) {
+        int n = hand.length;
 
-        for(int[] triplet : triplets){
+        if(n % groupSize != 0) return false;
 
-            if(triplet[0] > target [0] || triplet[1] > target [1] || triplet[2] > target [2]) continue;
-
-            result[0] = Math.max(result[0], triplet[0]);
-            result[1] = Math.max(result[1], triplet[1]);
-            result[2] = Math.max(result[2], triplet[2]);
-
-            if (result[0] == target[0] && result[1] == target[1] && result[2] == target[2]) {
-                return true;
-            }
+        TreeMap<Integer, Integer> mp = new TreeMap<>();
+        for(int i=0; i<n; i++){
+            mp.put(hand[i], mp.getOrDefault(hand[i], 0) + 1);
         }
 
-        return Arrays.equals(result, target);
+        while(mp.size() > 0){
+            int firstEle = mp.firstKey();
+
+            for(int i=1; i<groupSize; i++){
+                int nextEle = firstEle + i;
+                if(!mp.containsKey(nextEle)) return false;
+
+                int curCnt = mp.get(nextEle);
+                if(curCnt == 1) mp.remove(nextEle);
+                else mp.put(nextEle, curCnt - 1);
+            }
+
+            mp.put(firstEle, mp.getOrDefault(firstEle, 0) - 1);
+            int value = mp.get(firstEle);
+            if(value == 0) mp.remove(firstEle);
+        }
+
+        return true;
     }
 }
